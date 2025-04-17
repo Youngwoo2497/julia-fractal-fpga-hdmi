@@ -52,7 +52,7 @@ module HDMI_generator(
 
     // common async reset for serdes
     //wire rst_oserdes;
-    async_reset async_reset_instance (
+    lcd_async_reset_ctrl async_reset_instance (
         .i_clk(i_pix_clk),
         .i_rst(i_rst),
         .o_rst(rst_oserdes)

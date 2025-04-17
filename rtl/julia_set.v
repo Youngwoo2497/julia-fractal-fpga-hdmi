@@ -5,7 +5,7 @@
 // 
 // Create Date: 2024/12/03 22:21:43
 // Design Name: 
-// Module Name: julia
+// Module Name: julia_set
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,8 +20,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-// inputÀ¸·Î º¹¼ÒÆò¸éÀÇ zx, zy¸¦ ¹Ş°í, julia °è»êÀ» ¼öÇàÇÑ´Ù.
-// zÀÇ Å©±â°¡ 2¸¦ ÃÊ°úÇÏ°Å³ª ¹İº¹ È½¼ö°¡ 256È¸¸¦ ÃÊ°úÇÏ¸é ready ½ÅÈ£¸¦ È°¼ºÈ­ÇÑ´Ù.
+// inputìœ¼ë¡œ ë³µì†Œí‰ë©´ì˜ zx, zyë¥¼ ë°›ê³ , julia ê³„ì‚°ì„ ìˆ˜í–‰í•œë‹¤.
+// zì˜ í¬ê¸°ê°€ 2ë¥¼ ì´ˆê³¼í•˜ê±°ë‚˜ ë°˜ë³µ íšŸìˆ˜ê°€ 256íšŒë¥¼ ì´ˆê³¼í•˜ë©´ ready ì‹ í˜¸ë¥¼ í™œì„±í™”í•œë‹¤.
 module julia_set(
     input wire clk,
     input wire rst,
@@ -30,14 +30,14 @@ module julia_set(
     input wire signed [31:0] y_com,
     
     output reg ready,
-    output reg [8:0] fin_iter   // ÃÖÁ¾ iteration È½¼ö, 0~255
+    output reg [8:0] fin_iter   // ìµœì¢… iteration íšŸìˆ˜, 0~255
     );
     
     reg wait_state_ = 1'b0;
     
-    reg [8:0] cur_iter;           // ÇöÀç iteration È½¼ö
-    reg signed [31:0] zx, zy;     // ´ÙÀ½ zx, xy °è»ê¿¡ »ç¿ëµÊ
-    reg signed [31:0] cx, cy;     // c_state¿¡ µû¶ó °áÁ¤µÈ c »ó¼ö
+    reg [8:0] cur_iter;           // í˜„ì¬ iteration íšŸìˆ˜
+    reg signed [31:0] zx, zy;     // ë‹¤ìŒ zx, xy ê³„ì‚°ì— ì‚¬ìš©ë¨
+    reg signed [31:0] cx, cy;     // c_stateì— ë”°ë¼ ê²°ì •ëœ c ìƒìˆ˜
     wire signed [31:0] mul_zx_2, mul_zy_2, mul_zxzy, mul_2_zxzy;
     
     localparam c1_x = 32'hffff_999a; localparam c1_y = 32'h0000_999a; // -0.4, 0.6
@@ -72,7 +72,7 @@ module julia_set(
         .val(mul_2_zxzy)
     );    
     
-    // c_change °¡ È°¼ºÈ­µÇ¸é reset°ú ÁØÇÏ°Ô ¸ğµç ÃÊ±âº¯¼ö¿Í °è»êÀ» ÃÊ±âÈ­ÇÑ´Ù.
+    // c_change ê°€ í™œì„±í™”ë˜ë©´ resetê³¼ ì¤€í•˜ê²Œ ëª¨ë“  ì´ˆê¸°ë³€ìˆ˜ì™€ ê³„ì‚°ì„ ì´ˆê¸°í™”í•œë‹¤.
     localparam C1 = 2'b00; localparam C2 = 2'b01; localparam C3 = 2'b10;
     reg [1:0] c_state = C1;
     
@@ -85,10 +85,10 @@ module julia_set(
         endcase
     end
     
-    // ¸Å clk¸¶´Ù,
-    // reset ÀÌ È°¼ºÈ­µÇ¸é ¸ğµç ÃÊ±âº¯¼ö¿Í °è»êÀ» ÃÊ±âÈ­ÇÑ´Ù.
-    // ready °¡ È°¼ºÈ­µÇ¸é reset°ú ÁØÇÏ°Ô ¸ğµç ÃÊ±âº¯¼ö¿Í °è»êÀ» ÃÊ±âÈ­ÇÑ´Ù.
-    // ÀÌ¿ÜÀÇ °æ¿ì, iteration °è»êÀ» ¼öÇàÇÏ°í, ÃÖÁ¾ itertaion°ú ready¸¦ outputÀ¸·Î ¹İÈ¯ÇÑ´Ù.
+    // ë§¤ clkë§ˆë‹¤,
+    // reset ì´ í™œì„±í™”ë˜ë©´ ëª¨ë“  ì´ˆê¸°ë³€ìˆ˜ì™€ ê³„ì‚°ì„ ì´ˆê¸°í™”í•œë‹¤.
+    // ready ê°€ í™œì„±í™”ë˜ë©´ resetê³¼ ì¤€í•˜ê²Œ ëª¨ë“  ì´ˆê¸°ë³€ìˆ˜ì™€ ê³„ì‚°ì„ ì´ˆê¸°í™”í•œë‹¤.
+    // ì´ì™¸ì˜ ê²½ìš°, iteration ê³„ì‚°ì„ ìˆ˜í–‰í•˜ê³ , ìµœì¢… itertaionê³¼ readyë¥¼ outputìœ¼ë¡œ ë°˜í™˜í•œë‹¤.
     always @(posedge clk or posedge rst) begin
         // [1] if, reset activated, initialize all signals
         if (rst) begin

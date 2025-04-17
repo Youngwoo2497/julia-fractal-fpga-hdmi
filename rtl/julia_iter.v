@@ -51,22 +51,22 @@ module julia_iter(
         cx <= c1_x; cy <= c1_y;
     end
     
-    mul mul_inst1 (
+    fixed_point_mul mul_inst1 (
         .a(zx),
         .b(zx),
         .val(mul_zx_2)
     );
-    mul mul_inst2 (
+    fixed_point_mul mul_inst2 (
         .a(zy),
         .b(zy),
         .val(mul_zy_2)
     );
-    mul mul_inst3 (
+    fixed_point_mul mul_inst3 (
         .a(zx),
         .b(zy),
         .val(mul_zxzy)
     );
-    mul mul_inst4 (
+    fixed_point_mul mul_inst4 (
         .a(32'h0002_0000),  // 2
         .b(mul_zxzy),
         .val(mul_2_zxzy)

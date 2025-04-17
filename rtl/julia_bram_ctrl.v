@@ -204,7 +204,7 @@ module julia_bram_ctrl#(
     end
     
     // y_com = y_com_reverse * (-1)
-    mul mul_inst_reverse (
+    fixed_point_mul mul_inst_reverse (
         .a(32'hffff0000),  // -1
         .b(y_com_reverse),
         .val(y_com)

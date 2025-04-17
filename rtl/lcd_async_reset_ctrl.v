@@ -3,7 +3,7 @@
 
 
 
-module async_reset(
+module lcd_async_reset_ctrl(
     input  wire i_clk,      // clock
     input  wire i_rst,      // reset (active high)
     output reg  o_rst       // output reset

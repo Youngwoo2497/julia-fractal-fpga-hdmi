@@ -58,7 +58,7 @@ module HDMI_generator(
         .o_rst(rst_oserdes)
     );
 
-    serializer_10to1 serialize_ch0 (
+    tmds_serializer_10to1 serialize_ch0 (
         .i_clk(i_pix_clk),
         .i_clk_hs(i_pix_clk_5x),
         .i_rst_oserdes(rst_oserdes),
@@ -66,7 +66,7 @@ module HDMI_generator(
         .o_data(o_tmds_ch0_serial)
     );
 
-    serializer_10to1 serialize_ch1 (
+    tmds_serializer_10to1 serialize_ch1 (
         .i_clk(i_pix_clk),
         .i_clk_hs(i_pix_clk_5x),
         .i_rst_oserdes(rst_oserdes),
@@ -74,7 +74,7 @@ module HDMI_generator(
         .o_data(o_tmds_ch1_serial)
     );
 
-    serializer_10to1 serialize_ch2 (
+    tmds_serializer_10to1 serialize_ch2 (
         .i_clk(i_pix_clk),
         .i_clk_hs(i_pix_clk_5x),
         .i_rst_oserdes(rst_oserdes),
@@ -82,7 +82,7 @@ module HDMI_generator(
         .o_data(o_tmds_ch2_serial)
     );
 
-    serializer_10to1 serialize_chc (
+    tmds_serializer_10to1 serialize_chc (
         .i_clk(i_pix_clk),
         .i_clk_hs(i_pix_clk_5x),
         .i_rst_oserdes(rst_oserdes),

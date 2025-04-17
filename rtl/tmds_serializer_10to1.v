@@ -3,7 +3,7 @@
 
 
 
-module serializer_10to1(
+module tmds_serializer_10to1(
     input  wire i_clk,          // parallel clock
     input  wire i_clk_hs,       // high-speed clock (5 x i_clk when using DDR)
     input  wire i_rst_oserdes,  // reset from async reset (active high)

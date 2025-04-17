@@ -5,7 +5,7 @@
 // 
 // Create Date: 2024/12/03 22:13:07
 // Design Name: 
-// Module Name: julia_set
+// Module Name: BRAM_julia
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -35,23 +35,23 @@ module BRAM_julia#(
     output wire [7:0] o_blue
     );
     
-    // FSM chapter ÂüÁ¶, button edge¸¦ ±¸ÇöÇÏ±â À§ÇÑ reg, wire
-    wire [2:0] push;        // assignÀ¸·Î btn°ú ¿¬µ¿
-    reg [2:0] push_reg;     // clk ´ÜÀ§·Î btn°ú ¿¬µ¿
-    wire [2:0] push_button; // btnÀÇ edge¸¦ °¨Áö
+    // FSM chapter ì°¸ì¡°, button edgeë¥¼ êµ¬í˜„í•˜ê¸° ìœ„í•œ reg, wire
+    wire [2:0] push;        // assignìœ¼ë¡œ btnê³¼ ì—°ë™
+    reg [2:0] push_reg;     // clk ë‹¨ìœ„ë¡œ btnê³¼ ì—°ë™
+    wire [2:0] push_button; // btnì˜ edgeë¥¼ ê°ì§€
     
     assign push = ~btn;
     assign push_button[0] = push[0] & ~push_reg[0];
     assign push_button[1] = push[1] & ~push_reg[1];
     assign push_button[2] = push[2] & ~push_reg[2];
     
-    wire ready;             // julia set calculate ¿Ï·á, ÁÂÇ¥¸¦ ÀÌµ¿ÇØµµ µÊ
-    wire [8:0] iter;   // iteration È½¼ö (0~256)
+    wire ready;             // julia set calculate ì™„ë£Œ, ì¢Œí‘œë¥¼ ì´ë™í•´ë„ ë¨
+    wire [8:0] iter;   // iteration íšŸìˆ˜ (0~256)
     
     reg signed [19:0] x_lcd = 0;
-    reg signed [19:0] y_lcd = 0;        // LCDÀÇ ÁÂÇ¥ (0,0)~(1279,719), read address ·Î ¿¬°á
+    reg signed [19:0] y_lcd = 0;        // LCDì˜ ì¢Œí‘œ (0,0)~(1279,719), read address ë¡œ ì—°ê²°
     reg signed [31:0] x_com;
-    wire signed [31:0] y_com;         // º¹¼ÒÆò¸éÀÇ ÁÂÇ¥ (-4.00, -2.25)~(+4.00, +2.25), julia set ÀÇ inputÀ¸·Î ¿¬°á
+    wire signed [31:0] y_com;         // ë³µì†Œí‰ë©´ì˜ ì¢Œí‘œ (-4.00, -2.25)~(+4.00, +2.25), julia set ì˜ inputìœ¼ë¡œ ì—°ê²°
     reg signed [31:0] y_com_reverse;
     
     
@@ -59,9 +59,9 @@ module BRAM_julia#(
     // [1] Julia set insatnce module import
     // input : clk, rst, c_change(btn[0]), x_com, y_com
     // output: ready, fin_iter(iter)
-    // LCD ÁÂÇ¥¿¡¼­ È¯»êÇÑ º¹¼ÒÆò¸éÀÇ ÁÂÇ¥(ÈÄ¼ú)¸¦ ÀÔ·ÂÇÏ¸é,
-    // ÇØ´ç ÁÂÇ¥¿¡¼­ julia set °è»ê ÈÄ iteration È½¼ö¸¦ ¹İÈ¯ÇÑ´Ù.
-    // ready ½ÅÈ£¸¦ ¹İÈ¯ÇÏ¿© BRAM write timing°ú, LCD ÁÂÇ¥ º¯°æ timingÀ» Á¦¾îÇÑ´Ù.
+    // LCD ì¢Œí‘œì—ì„œ í™˜ì‚°í•œ ë³µì†Œí‰ë©´ì˜ ì¢Œí‘œ(í›„ìˆ )ë¥¼ ì…ë ¥í•˜ë©´,
+    // í•´ë‹¹ ì¢Œí‘œì—ì„œ julia set ê³„ì‚° í›„ iteration íšŸìˆ˜ë¥¼ ë°˜í™˜í•œë‹¤.
+    // ready ì‹ í˜¸ë¥¼ ë°˜í™˜í•˜ì—¬ BRAM write timingê³¼, LCD ì¢Œí‘œ ë³€ê²½ timingì„ ì œì–´í•œë‹¤.
     ///////////////////////////////////////////////////////////////////////////
     
     julia_set julia_inst (
@@ -79,9 +79,9 @@ module BRAM_julia#(
     // [2] BRAM instance module import
     // write: clk, ena, wea, addra(20bit), dina(4bit), douta(4bit)
     // read: clk, enb, web, addrb(20bit), dinb(4bit), doutb(4bit)
-    // julia ¸ğµâ¿¡¼­ ¹İÈ¯ÇÑ ready ½ÅÈ£¿¡ ¸ÂÃç write¸¦ ÁøÇàÇÑ´Ù.
-    // read timingÀº »ó½Ã °¡´ÉÇÏµµ·Ï ¼³Á¤ÇÑ´Ù.
-    // data¿Í address ¼³Á¤¿¡ °üÇØ¼­´Â ÈÄ¼ú.
+    // julia ëª¨ë“ˆì—ì„œ ë°˜í™˜í•œ ready ì‹ í˜¸ì— ë§ì¶° writeë¥¼ ì§„í–‰í•œë‹¤.
+    // read timingì€ ìƒì‹œ ê°€ëŠ¥í•˜ë„ë¡ ì„¤ì •í•œë‹¤.
+    // dataì™€ address ì„¤ì •ì— ê´€í•´ì„œëŠ” í›„ìˆ .
     ///////////////////////////////////////////////////////////////////////////
     
     reg signed [19:0] addr_write;
@@ -105,42 +105,42 @@ module BRAM_julia#(
     );
     
     ///////////////////////////////////////////////////////////////////////////
-    // [3] zoom state, write data ¼³Á¤ (´ÜÀ§: clk)
-    // [3-1] 4°³ÀÇ state¿¡ µû¶ó (FSM ÂüÁ¶) º¹¼ÒÆò¸éÀÇ ½Ç¼ö, Çã¼ö ¹üÀ§ Á¶Àı ([5]¿¡ ÀÌ¾îÁü)
-    // [3-2] iteration È½¼ö¿¡ µû¶ó writeÇÒ data(8bit)¸¦ 16´Ü°è(4bit)·Î ÁöÁ¤
+    // [3] zoom state, write data ì„¤ì • (ë‹¨ìœ„: clk)
+    // [3-1] 4ê°œì˜ stateì— ë”°ë¼ (FSM ì°¸ì¡°) ë³µì†Œí‰ë©´ì˜ ì‹¤ìˆ˜, í—ˆìˆ˜ ë²”ìœ„ ì¡°ì ˆ ([5]ì— ì´ì–´ì§)
+    // [3-2] iteration íšŸìˆ˜ì— ë”°ë¼ writeí•  data(8bit)ë¥¼ 16ë‹¨ê³„(4bit)ë¡œ ì§€ì •
     ///////////////////////////////////////////////////////////////////////////
     reg [31:0] real_min, real_max; reg [31:0] imag_min, imag_max;
     
-    // Z1 state ÀÇ »ó¼ö : ±âº» ¹èÀ²ÀÇ ½Ç¼ö(-4.00~4.00), Çã¼ö(-2.25~2.25) ¹üÀ§
+    // Z1 state ì˜ ìƒìˆ˜ : ê¸°ë³¸ ë°°ìœ¨ì˜ ì‹¤ìˆ˜(-4.00~4.00), í—ˆìˆ˜(-2.25~2.25) ë²”ìœ„
     localparam real_min_1 = 32'hfffc_0000; localparam real_max_1 = 32'h0004_0000;   // -4.00~4.00
     localparam imag_min_1 = 32'hfffd_c000; localparam imag_max_1 = 32'h0002_4000;     // -2.25~2.25
-    // Z2 state ÀÇ »ó¼ö : x2 ¹èÀ² ½Ç¼ö(-2.00~2.00), Çã¼ö(-1.125~1.125) ¹üÀ§
+    // Z2 state ì˜ ìƒìˆ˜ : x2 ë°°ìœ¨ ì‹¤ìˆ˜(-2.00~2.00), í—ˆìˆ˜(-1.125~1.125) ë²”ìœ„
     localparam real_min_2 = 32'hfffe_0000; localparam real_max_2 = 32'h0002_0000;   // -2.00~2.00
     localparam imag_min_2 = 32'hfffe_e000; localparam imag_max_2 = 32'h0001_2000;     // -1.125~1.125
-    // Z3 state ÀÇ »ó¼ö : x4 ¹èÀ² ½Ç¼ö(-1.00~1.00), Çã¼ö(-0.5625~0.5625) ¹üÀ§
+    // Z3 state ì˜ ìƒìˆ˜ : x4 ë°°ìœ¨ ì‹¤ìˆ˜(-1.00~1.00), í—ˆìˆ˜(-0.5625~0.5625) ë²”ìœ„
     localparam real_min_3 = 32'hffff_0000; localparam real_max_3 = 32'h0001_0000;   // -1.00~1.00
     localparam imag_min_3 = 32'hffff_7000; localparam imag_max_3 = 32'h0000_9000;     // -0.5625~0.5625
-    // Z4 state ÀÇ »ó¼ö : x8 ¹èÀ² ½Ç¼ö(-0.5~0.5), Çã¼ö(-0.28125~0.28125) ¹üÀ§
+    // Z4 state ì˜ ìƒìˆ˜ : x8 ë°°ìœ¨ ì‹¤ìˆ˜(-0.5~0.5), í—ˆìˆ˜(-0.28125~0.28125) ë²”ìœ„
     localparam real_min_4 = 32'hffff_8000; localparam real_max_4 = 32'h0000_8000;   // -0.5~0.5
     localparam imag_min_4 = 32'hffff_b800; localparam imag_max_4 = 32'h0000_4800;     // -0.28125~0.28125
     
-    // gray scaleÀÇ »ó¼ö : 8bitÀÇ data 16´Ü°è¸¦ ÁöÁ¤
+    // gray scaleì˜ ìƒìˆ˜ : 8bitì˜ data 16ë‹¨ê³„ë¥¼ ì§€ì •
     localparam GRAY_0 = 8'd0; localparam GRAY_1 = 8'd17;  localparam GRAY_2 = 8'd34;  localparam GRAY_3 = 8'd51;
     localparam GRAY_4 = 8'd68; localparam GRAY_5 = 8'd85;  localparam GRAY_6 = 8'd102;  localparam GRAY_7 = 8'd119;
     localparam GRAY_8 = 8'd136; localparam GRAY_9 = 8'd153;  localparam GRAY_10 = 8'd170;  localparam GRAY_11 = 8'd187;
     localparam GRAY_12 = 8'd204; localparam GRAY_13 = 8'd221;  localparam GRAY_14 = 8'd238;  localparam GRAY_15 = 8'd255;
 
     
-    // btn[2], btn[3] ÀÔ·Â¿¡ µû¶ó Á¶ÀıµÇ´Â ½Ç¼ö, Çã¼ö ¹üÀ§¸¦ Á¶ÀıÇÏ´Â state
+    // btn[2], btn[3] ì…ë ¥ì— ë”°ë¼ ì¡°ì ˆë˜ëŠ” ì‹¤ìˆ˜, í—ˆìˆ˜ ë²”ìœ„ë¥¼ ì¡°ì ˆí•˜ëŠ” state
     localparam Z1 = 2'b00; localparam Z2 = 2'b01; localparam Z3 = 2'b10; localparam Z4 = 2'b11;
-    reg [1:0] zoom_state = Z1;  // ±âº» state´Â Z1
+    reg [1:0] zoom_state = Z1;  // ê¸°ë³¸ stateëŠ” Z1
     
-    reg wait_state = 1'b0;  // clk signal Å¸ÀÌ¹ÖÀ» ¸ÂÃß±â À§ÇØ, waitingÇÏ´Â state
+    reg wait_state = 1'b0;  // clk signal íƒ€ì´ë°ì„ ë§ì¶”ê¸° ìœ„í•´, waitingí•˜ëŠ” state
     
     always @(posedge clk) begin
-        push_reg <= push;   // clk ´ÜÀ§·Î btnÀ» ¿¬µ¿ÇÔ, button edge ÀÎ½Ä¿¡ »ç¿ëµÊ
+        push_reg <= push;   // clk ë‹¨ìœ„ë¡œ btnì„ ì—°ë™í•¨, button edge ì¸ì‹ì— ì‚¬ìš©ë¨
         
-        // ÀÔ·Â button ¿¡ µû¶ó zoom state ¸¦ Á¶ÀıÇÏ´Â FSM
+        // ì…ë ¥ button ì— ë”°ë¼ zoom state ë¥¼ ì¡°ì ˆí•˜ëŠ” FSM
         if (push_button == 3'b010) begin    //zoom in
             case (zoom_state)
                 Z1: zoom_state <= Z2;
@@ -160,7 +160,7 @@ module BRAM_julia#(
             endcase
         end
         
-        // julia setÀÇ °á°ú, iteration È½¼ö¿¡ µû¶ó data_write¸¦ °áÁ¤
+        // julia setì˜ ê²°ê³¼, iteration íšŸìˆ˜ì— ë”°ë¼ data_writeë¥¼ ê²°ì •
         if (iter < 16) begin data_write <= 4'd0; end
         else if (iter < 32) begin data_write <= 4'd1; end
         else if (iter < 48) begin data_write <= 4'd2; end
@@ -178,7 +178,7 @@ module BRAM_julia#(
         else if (iter < 240) begin data_write <= 4'd14; end
         else if (iter < 257) begin data_write <= 4'd15; end
 
-        // data write°¡ ÁøÇàµÇ´Â µ¿¾È wait_state¸¦ Á¶ÀıÇØ ÇÑ clk ½¬¾î°¡±â
+        // data writeê°€ ì§„í–‰ë˜ëŠ” ë™ì•ˆ wait_stateë¥¼ ì¡°ì ˆí•´ í•œ clk ì‰¬ì–´ê°€ê¸°
         if (ready) wait_state <= 1'b1;
         if (wait_state) begin
             wait_state <= 1'b0; x_lcd <= x_lcd + 20'b1;
@@ -188,11 +188,11 @@ module BRAM_julia#(
     end
     
     ///////////////////////////////////////////////////////////////////////////
-    // [4] BRAM address ¼³Á¤ (´ÜÀ§: * (always))
-    // write address : LCD ÁÂÇ¥¿¡ ÇØ´çÇÏ´Â x_lcd, y_lcd·Î °è»ê
-    // y_lcdÀÇ °æ¿ì, »óÇÏ¹İÀüÀ» ½ÃÅ°±â À§ÇØ y_com_reverse¿Í mul ¸ğµâÀ» ÀÌ¿ëÇØ -1¸¸Å­ °öÇÔ
-    // (LCD ÁÂÇ¥´Â ready ½ÅÈ£°¡ È°¼ºÈ­µÉ ¶§¸¶´Ù 1¾¿ Áõ°¡ÇÑ´Ù. ¿¡ ÈÄ¼ú)
-    // read address : inputÀ¸·Î ¹Ş´Â sx, sy·Î °è»ê
+    // [4] BRAM address ì„¤ì • (ë‹¨ìœ„: * (always))
+    // write address : LCD ì¢Œí‘œì— í•´ë‹¹í•˜ëŠ” x_lcd, y_lcdë¡œ ê³„ì‚°
+    // y_lcdì˜ ê²½ìš°, ìƒí•˜ë°˜ì „ì„ ì‹œí‚¤ê¸° ìœ„í•´ y_com_reverseì™€ mul ëª¨ë“ˆì„ ì´ìš©í•´ -1ë§Œí¼ ê³±í•¨
+    // (LCD ì¢Œí‘œëŠ” ready ì‹ í˜¸ê°€ í™œì„±í™”ë  ë•Œë§ˆë‹¤ 1ì”© ì¦ê°€í•œë‹¤. ì— í›„ìˆ )
+    // read address : inputìœ¼ë¡œ ë°›ëŠ” sx, syë¡œ ê³„ì‚°
     ///////////////////////////////////////////////////////////////////////////
     wire [19:0] px, py;
     
@@ -214,10 +214,10 @@ module BRAM_julia#(
     assign addr_read = px + py * 20'd1280;
     
     ///////////////////////////////////////////////////////////////////////////
-    // [5] zoom state, RGB value output ¼³Á¤ (´ÜÀ§: * (always))
-    // zoom state: [3]¿¡¼­ Á¦¾îÇÑ zoom_state¿¡ µû¶ó ½Ç½Ã°£À¸·Î ½Ç¼ö, Çã¼ö ¹üÀ§¸¦ Á¶ÀıÇÑ´Ù.
-    // RGB value: [3]¿¡¼­ Á¦¾îÇÑ data¿¡ µû¶ó, read data°¡ ÀÌ¿¡ ÇØ´çÇÏ¸é 
-    //              gray scaleÀ» ½Ç½Ã°£À¸·Î outputÀ¸·Î ¿¬°áÇÑ´Ù.
+    // [5] zoom state, RGB value output ì„¤ì • (ë‹¨ìœ„: * (always))
+    // zoom state: [3]ì—ì„œ ì œì–´í•œ zoom_stateì— ë”°ë¼ ì‹¤ì‹œê°„ìœ¼ë¡œ ì‹¤ìˆ˜, í—ˆìˆ˜ ë²”ìœ„ë¥¼ ì¡°ì ˆí•œë‹¤.
+    // RGB value: [3]ì—ì„œ ì œì–´í•œ dataì— ë”°ë¼, read dataê°€ ì´ì— í•´ë‹¹í•˜ë©´ 
+    //              gray scaleì„ ì‹¤ì‹œê°„ìœ¼ë¡œ outputìœ¼ë¡œ ì—°ê²°í•œë‹¤.
     ///////////////////////////////////////////////////////////////////////////
      reg [7:0] temp_gray;
     
@@ -242,8 +242,8 @@ module BRAM_julia#(
         endcase
         
         case(data_read)
-        // data read¿¡ µû¶ó, 16´Ü°èÀÇ gray scaleÀ» temp_gray¿¡ ÀúÀå
-        // temp_gray´Â °ğ RGB siganl¿Í ¿¬°áµÊ
+        // data readì— ë”°ë¼, 16ë‹¨ê³„ì˜ gray scaleì„ temp_grayì— ì €ì¥
+        // temp_grayëŠ” ê³§ RGB siganlì™€ ì—°ê²°ë¨
             4'd0: temp_gray <= GRAY_0;
             4'd1: temp_gray <= GRAY_1;
             4'd2: temp_gray <= GRAY_2;

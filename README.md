@@ -6,8 +6,8 @@ Display Julia Set fractals on an LCD using PYNQ Zynq SoC board
 
 - **프랙털 종류**: Julia Set  
 - **구현 방식**: Verilog HDL  
-- **플랫폼**: Xilinx FPGA (PYNQ board)
-- **디스플레이**: 1280x720 LCD / VGA 모니터  
+- **플랫폼**: Xilinx FPGA (PYNQ-Z2 board)
+- **디스플레이**: 1280x720 LCD 
 - **좌표 매핑**: 화면 해상도 → 복소평면  
 - **발산 판정**: 고정 소수점 기반 반복 연산  
 - **컬러 매핑**: 반복 횟수 → 색상 값
@@ -27,18 +27,17 @@ Display Julia Set fractals on an LCD using PYNQ Zynq SoC board
 
 ## 주요 모듈
 
-- `julia_core.v`: Julia 수식 `Z = Z² + C` 반복 계산
-- `complex_calc.v`: 복소수 연산 전용 모듈
-- `pixel_driver.v`: 화면 좌표 ↔ 복소평면 매핑
-- `top.v`: LCD 제어 및 통합
-
-- `HDMI_top.v`: 전체 시스템의 Top module, 하위 모듈로 `HDMI_generator`, `gfx`, `display_timings`, `display_clocks` 등을 포함하여 전체 영상 생성 및 출력 파이프라인 통합
+- `HDMI_TOP.v`: 전체 시스템 Top module
+- `HDMI_generator.v`: 전체 영상 생성 및 출력 파이프라인 통합, 하위 모듈로 `lcd_async_reset_ctrl`, `tmds_encoder_dvi`, `tmds_serializer_10to1` 포함
 - `display_clocks.v`: 입력 클럭(100MHz)을 기반으로 HDMI 전송에 필요한 주파수의 클럭 신호 생성
-- `display_timings.v`: 화면의 horizontal/vertical 좌표(x, y) 를 계산, 각 픽셀에 대해 현재 위치 정보를 `gfx.v`로 전달
-- `gfx.v`: 입력 좌표 `(x, y)`를 받아, 해당 픽셀에 출력할 **RGB 색상값**을 계산, 하위 모듈로 `BRAM_julia.v`, `julia_set.v` 포함
-- `BRAM_julia.v`: 좌표 변환 + BRAM 컨트롤러, 계산된 반복 횟수를 바탕으로 색상값을 결정하여 BRAM에 저장, 출력
-- `julia_set.v`: Julia 수식 `Z = Z² + C` 반복 계산 모듈
-- `mul.v`: Q15.16 포맷의 실수/복소수 곱셈기
+- `display_timings.v`: 화면의 horizontal/vertical 좌표(x, y) 를 계산, 각 픽셀 좌표 생성
+- `fixed_point_mul.v`: Q15.16 포맷의 실수/복소수 곱셈기
+- `julia_gfx.v`: 그래픽 제어 최상위 모듈, 하위 모듈로 `julia_bram_ctrl.v`, `julia_iter.v` 포함
+- `julia_bram_ctrl.v`: 계산된 반복 횟수를 바탕으로 BRAM에 색상 데이터 저장, 호출 제어
+- `julia_iter.v`: Julia Set 반복 계산: `Z = Z² + C`
+- `lcd_async_reset_ctrl.v`: LCD 모니터의 비동기 reset 신호 제어
+- `tmds_encoder_dvi.v`: channel 3개를 제어
+- `tmds_serializer_10to1.v`: 10:1 직렬 변환
 
 
 ```text
@@ -48,11 +47,11 @@ Display Julia Set fractals on an LCD using PYNQ Zynq SoC board
                                  │
                             display_timings.v ──▶ (x, y)
                                  │
-                               gfx.v
+                               julia_gfx.v
                                  │
                         ┌──────────────┐
                         │              ▼
-               BRAM_julia.v     ──▶ julia_set.v (Z = Z² + C)
+               julia_bram_ctrl.v     ──▶ julia_iter.v (Z = Z² + C)
                         │              │
                         ▼              ▼
                  RGB 데이터         Iteration 결과
@@ -60,6 +59,7 @@ Display Julia Set fractals on an LCD using PYNQ Zynq SoC board
                   HDMI_generator.v
                         │
                 TMDS Encoder + Serializer
+        (tmds_encoder_dvi.v)  (tmds_serializer_10to1.v)
                         │
                        LCD
 

@@ -1,4 +1,4 @@
-# verilog-pynq-fractal-display
+# julia-fractal-fpga-hdmi
 Display Julia Set fractals on an LCD using PYNQ Zynq SoC board
 
 ---
@@ -63,6 +63,7 @@ Display Julia Set fractals on an LCD using PYNQ Zynq SoC board
                         │
                        LCD
 
+```
 ---
 
 ## 테스트 방법

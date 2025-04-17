@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module mul (
+module fixed_point_mul (
     input wire signed [31:0] a,   // multiplicand
     input wire signed [31:0] b,   // multiplier
     output reg signed [31:0] val  // multiplication result

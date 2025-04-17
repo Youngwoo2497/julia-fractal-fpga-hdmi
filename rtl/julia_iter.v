@@ -22,7 +22,7 @@
 
 // input으로 복소평면의 zx, zy를 받고, julia 계산을 수행한다.
 // z의 크기가 2를 초과하거나 반복 횟수가 256회를 초과하면 ready 신호를 활성화한다.
-module julia_set(
+module julia_iter(
     input wire clk,
     input wire rst,
     input wire c_change,

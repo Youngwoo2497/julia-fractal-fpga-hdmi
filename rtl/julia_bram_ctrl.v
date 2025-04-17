@@ -5,7 +5,7 @@
 // 
 // Create Date: 2024/12/03 22:13:07
 // Design Name: 
-// Module Name: BRAM_julia
+// Module Name: julia_bram_ctrl
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -64,7 +64,7 @@ module julia_bram_ctrl#(
     // ready 신호를 반환하여 BRAM write timing과, LCD 좌표 변경 timing을 제어한다.
     ///////////////////////////////////////////////////////////////////////////
     
-    julia_set julia_inst (
+    julia_iter julia_inst (
         .clk(clk),
         .rst(rst),
         .c_change(push_button[0]),

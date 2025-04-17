@@ -19,7 +19,7 @@ module gfx (
     wire [7:0] fractal_green;
     wire [7:0] fractal_blue;
     
-    julia_bram_crtl #(
+    julia_bram_ctrl #(
     .H_RES(1280),
     .V_RES(720)
     )
